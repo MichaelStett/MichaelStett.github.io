@@ -1,8 +1,5 @@
 import React from "react";
-
-type BreadcrumbProps = {
-  breadcrumbList: { name: string, path: string }[];
-}
+import { BreadcrumbProps } from "../types/Book";
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ breadcrumbList }) => {
   return (
@@ -11,7 +8,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ breadcrumbList }) => {
         const isLastItem = index === breadcrumbList.length - 1;
         return (
           <span key={index}>
-            <a href={item.path}>{item.name}</a>
+            <a href={item.breadcrumb.path}>{item.breadcrumb.name}</a>
             {!isLastItem && " > "}
           </span>
         );
