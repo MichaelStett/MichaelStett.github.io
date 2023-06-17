@@ -22,14 +22,15 @@ const flatten = function (books: Book[]): FlatBook[] {
   }));
 };
 
-const trimText = function (text : string, maxLenght : number = 40) : string {
+const trimText = function (text: string, maxLenght: number = 40): string {
   if (text === undefined) return '';
-  return text.length > maxLenght ? text.substring(0, maxLenght-3) + '...' : text;
+  return text.length > maxLenght ? text.substring(0, maxLenght - 3) + '...' : text;
 }
 
 const Table: React.FC = () => {
   const { search } = useParams<TableParams>();
   const [searchValue, setSearchValue] = useState<string | undefined>(search)
+  const [startIndex, setStartIndex] = useState(0);
   const navigate = useNavigate();
   const [fetchedData, setfetchedData] = useState<FlatBook[]>([]);
 
@@ -37,22 +38,21 @@ const Table: React.FC = () => {
     setSearchValue(search);
   }, [search]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-        try { 
-          const result = await axios(`https://www.googleapis.com/books/v1/volumes?q=${searchValue}&maxResults=10`);
-          const flat = flatten(result.data.items)
-          setfetchedData(flat)
-        } catch (err) {
-          console.log(err)
-        } finally {
-            
-        } 
-    };
+  const fetchData = async () => {
+    try {
+      const result = await axios(`https://www.googleapis.com/books/v1/volumes?q=${searchValue}&maxResults=10&startIndex=${startIndex}`);
+      const flat = flatten(result.data.items)
+      setfetchedData([...fetchedData, ...flat])
+      setStartIndex(startIndex + 10);
+    } catch (err) {
+      console.log(err)
+    } finally {
 
-    if (searchValue) {
-      fetchData();
     }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, [searchValue]);
 
   const data = React.useMemo(() => fetchedData, [fetchedData]);
@@ -102,7 +102,7 @@ const Table: React.FC = () => {
   ]
 
   const [breadcrumbs, setBreadCrumbs] = useState<Array<BreadcrumbProp>>(breadcrumbsArray);
- 
+
   return (
     <>
       <div className="sticky container mx-auto px-4">
@@ -176,7 +176,7 @@ const Table: React.FC = () => {
                           name='rating'
                           starDimension="20px"
                           starSpacing="2px"
-                        /> 
+                        />
                         <br />
                         {row.original.description}
                         <br />
@@ -190,6 +190,9 @@ const Table: React.FC = () => {
             })}
           </tbody>
         </table>
+        <div className="flex justify-center items-center">
+          <button onClick={() => fetchData()} className=' mt-4 mb-4 px-4 py-2 bg-blue-500 text-white rounded-md'>Load more</button>
+        </div>
       </div>
     </>
   );
