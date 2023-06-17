@@ -3,6 +3,7 @@ export type Book = {
     volumeInfo: {
         authors: string[];
         title: string;
+        description: string;
         categories: string[];
         averageRating: number;
     };
@@ -12,6 +13,7 @@ export type Book = {
 export type FlatBook = {
     id: string;
     title: string;
+    description: string;
     authors: string;
     categories: string;
     averageRating: number;

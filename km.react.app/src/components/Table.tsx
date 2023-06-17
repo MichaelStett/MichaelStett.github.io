@@ -1,74 +1,68 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTable, useSortBy, Column } from 'react-table';
 import Breadcrumb from "./Breadcrumb";
 import { Book, BreadcrumbProp, FlatBook } from '../types/Book';
 import StarRatings from 'react-star-ratings';
 
-type LocationState = {
-  searchValue: string;
+type TableParams = {
+  search: string;
 };
 
 const flatten = function (books: Book[]): FlatBook[] {
   return books.map(book => ({
     id: book.id,
-    title: book.volumeInfo.title,
+    title: trimText(book.volumeInfo.title),
     description: book.volumeInfo.description,
-    authors: book.volumeInfo.authors?.join(', '),
-    categories: book.volumeInfo.categories?.join(', '),
+    authors: trimText(book.volumeInfo.authors?.join(', ')),
+    categories: trimText(book.volumeInfo.categories?.join(', ')),
     averageRating: book.volumeInfo.averageRating,
     kind: book.kind.replace("books#", ""),
   }));
 };
 
+const trimText = function (text : string, maxLenght : number = 40) : string {
+  if (text === undefined) return '';
+  return text.length > maxLenght ? text.substring(0, maxLenght-3) + '...' : text;
+}
+
 const Table: React.FC = () => {
-  // const navigate = useNavigate();
-  const location = useLocation().state as LocationState;
-
-  const [searchTempValue, setTempSearchValue] = useState('');
+  const { search } = useParams<TableParams>();
+  const [searchValue, setSearchValue] = useState<string | undefined>(search)
   const navigate = useNavigate();
+  const [fetchedData, setfetchedData] = useState<FlatBook[]>([]);
 
-  const [isEmpty, setIsEmpty] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    setSearchValue(search);
+  }, [search]);
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTempSearchValue(event.target.value);
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+        try { 
+          const result = await axios(`https://www.googleapis.com/books/v1/volumes?q=${searchValue}&maxResults=10`);
+          const flat = flatten(result.data.items)
+          setfetchedData(flat)
+        } catch (err) {
+          console.log(err)
+        } finally {
+            
+        } 
+    };
 
-  const handleSearchClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    console.log(searchTempValue);
-    await fetchData(searchTempValue);
-  }
-
-  const [fetchedData, setfetchedData] = useState<Book[]>([]);
-
-  const fetchData = async (searchValue: string | null) => {
-    if (searchValue == null || searchValue === "") {
-      setIsEmpty(true);
-    } else {
-      setIsEmpty(false);
-      setIsLoading(true);
-
-      try {
-        const result = await axios(`https://www.googleapis.com/books/v1/volumes?q=${searchValue}&maxResults=40`);
-        setfetchedData(result.data.items);
-      } catch (err) {
-        console.log(err)
-      } finally {
-        setIsLoading(false);
-      }
+    if (searchValue) {
+      fetchData();
     }
-  };
+  }, [searchValue]);
 
-  const data = React.useMemo(() => flatten(fetchedData), [fetchedData]);
+  const data = React.useMemo(() => fetchedData, [fetchedData]);
 
   const columns: Column<FlatBook>[] = React.useMemo(
     () => [
       {
         Header: 'No',
         Cell: ({ row }: { row: any }) => (
-          <span className='justify-normal'>{row.index + 1}</span> // Add 1 to start counting from 1 instead of 0
+          <span className='justify-normal'>{row.index + 1}</span>
         ),
         disableSortBy: false,
       },
@@ -97,64 +91,27 @@ const Table: React.FC = () => {
     getTableBodyProps,
     headerGroups,
     rows,
-    prepareRow,
+    prepareRow
   } = useTable({ columns, data }, useSortBy);
 
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
   const breadcrumbsArray: Array<BreadcrumbProp> = [
-    {
-      breadcrumb: {
-        name: 'Table',
-        path: '/'
-      }
-    }
+    { breadcrumb: { name: 'Home', path: '/' } },
+    { breadcrumb: { name: 'Table', path: `/table/${search}` } },
   ]
 
   const [breadcrumbs, setBreadCrumbs] = useState<Array<BreadcrumbProp>>(breadcrumbsArray);
-
-  if (isEmpty) {
-    return (
-      <>
-        <Breadcrumb breadcrumbList={breadcrumbs} />
-
-        <div>
-          <input type="text" value={searchTempValue} onChange={handleSearchChange} />
-          <button onClick={handleSearchClick}>Search</button>
-        </div>
-      </>
-    )
-  }
-
-  if (isLoading) {
-    return (
-      <>
-        <Breadcrumb breadcrumbList={breadcrumbs} />
-
-        <div>
-          <input type="text" value={searchTempValue} onChange={handleSearchChange} />
-          <button onClick={handleSearchClick}>Search</button>
-        </div>
-
-        <div>Loading...</div>
-      </>
-    )
-  }
-
+ 
   return (
     <>
       <div className="sticky container mx-auto px-4">
         <div className="sticky top-0 bg-white">
-          <Breadcrumb breadcrumbList={breadcrumbs}  />
-          <div className=''>
-          <input type="text" value={searchTempValue} onChange={handleSearchChange}
-              className="px-4 py-2 border rounded-md mr-2 w-60" />
-            <button onClick={handleSearchClick} className="px-4 py-2 bg-blue-500 text-white rounded-md">Search</button>
-          </div>
+          <Breadcrumb breadcrumbList={breadcrumbs} />
         </div>
 
-        <table {...getTableProps()} className="table-fixed w-full mt-10 text-sm sm:text-base md:text-lg">
-          <thead className="sticky top-16 z-10 bg-white">
+        <table {...getTableProps()} className="table-fixed w-full mt-10 text-sm sm:text-base md:text-lg bg-white">
+          <thead className="sticky top-6 z-10 bg-white">
             {headerGroups.map(headerGroup => (
               <tr {...headerGroup.getHeaderGroupProps()} className="bg-blue-500 text-white rounded">
                 {headerGroup.headers.map((column: any) => (
@@ -183,10 +140,10 @@ const Table: React.FC = () => {
                         setBreadCrumbs(breadcrumbs);
                         setExpandedRow(null);
                       } else {
-                        if (breadcrumbs.length > 1) {
+                        if (breadcrumbs.length > 2) {
                           breadcrumbs.pop();
                         }
-                        breadcrumbs.push({ breadcrumb: { name: `${data[row.index].title}`, path: "/" } });
+                        breadcrumbs.push({ breadcrumb: { name: `${data[row.index].title}`, path: '' } });
                         setBreadCrumbs(breadcrumbs);
                         setExpandedRow(row.index);
                       }
@@ -214,21 +171,23 @@ const Table: React.FC = () => {
                         <StarRatings
                           rating={row.original.averageRating}
                           numberOfStars={5}
-                          starRatedColor="#FFD700" 
-                          starEmptyColor="white"                         
+                          starRatedColor="#FFD700"
+                          starEmptyColor="white"
                           name='rating'
                           starDimension="20px"
                           starSpacing="2px"
-                        />
+                        /> 
                         <br />
                         {row.original.description}
+                        <br />
+                        <button onClick={() => navigate(`/table/${search}/${row.original.id}/details`)}
+                          className='px-4 py-2 bg-blue-500 text-white rounded-md'> More </button>
                       </td>
                     </tr>
                   ) : null}
                 </React.Fragment>
               );
             })}
-
           </tbody>
         </table>
       </div>

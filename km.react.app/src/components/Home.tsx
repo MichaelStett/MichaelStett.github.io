@@ -2,13 +2,18 @@ import React from 'react';
 import Breadcrumb from './Breadcrumb';
 import Search from './Search';
 
-const Home: React.FC = ( ) => {
+const Home: React.FC = () => {
   return (
     <>
-    {/* <Breadcrumb breadcrumbList={[{ name: 'Home', path: '/' }]} />   */}
-    <h2>Home Screen</h2>
-    <Search/>
-  </>
+      <div className="sticky container mx-auto px-4">
+        <div className="sticky top-0 bg-white">
+          <Breadcrumb breadcrumbList={[
+            { breadcrumb: { name: 'Home', path: '/' } }
+          ]} />
+          <Search />
+        </div>
+      </div>
+    </>
   );
 };
 

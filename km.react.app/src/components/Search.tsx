@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const Search: React.FC = () => {
   const [searchValue, setSearchValue] = useState('');
@@ -9,20 +9,17 @@ const Search: React.FC = () => {
     setSearchValue(event.target.value);
   };
 
-  const onKeyDown = (e : React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key == 'Enter' ) {
-        console.log(searchValue);
+  const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (searchValue.length > 0){
+      navigate(`/table/${searchValue}`);
     }
-  }
-
-  const handleSearchClick = (e : React.MouseEvent<HTMLButtonElement>) => {
-    console.log(searchValue);
   }
 
   return (
     <div>
-      <input type="text" value={searchValue} onChange={handleSearchChange} onKeyDown={onKeyDown} />
-      <button onClick={handleSearchClick}>Search</button>
+      <input type="text" value={searchValue} onChange={handleSearchChange}
+        className="px-4 py-2 border rounded-md mr-2 w-60" />
+      <button onClick={handleSearchClick} className="px-4 py-2 bg-blue-500 text-white rounded-md">Search</button>
     </div>
   );
 }

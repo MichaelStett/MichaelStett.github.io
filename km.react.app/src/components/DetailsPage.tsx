@@ -6,13 +6,12 @@ import { BookDetails } from "../types/BookDetails";
 
 type DetailParams = {
   itemId: string;
+  search: string;
 };
 
 const DetailsPage: React.FC = () => {
-  const { itemId } = useParams<DetailParams>();
-
+  const { itemId, search } = useParams<DetailParams>();
   const [book, setBook] = useState<BookDetails | null>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,16 +22,16 @@ const DetailsPage: React.FC = () => {
     fetchData();
   }, [itemId]);
 
-  const onBack = () => {
-    navigate(-1);
-  };
-
   return book ? (
     <>
-      {/* <Breadcrumb breadcrumbList={[{ name: 'Home', path: '/' }, { name: 'Table', path: '/table' }, { name: `${itemId}`, path: `/table/${itemId}` }]} /> */}
+      <Breadcrumb breadcrumbList={[
+        { breadcrumb: { name: 'Home', path: '/' } },
+        { breadcrumb: { name: 'Table', path: `/table/${search}` } },
+        { breadcrumb: { name: `${book.volumeInfo.title}`, path: `` } },
+        { breadcrumb: { name: `Details`, path: `/table/${search}/${itemId}/Details` } }
+      ]} />
 
       <div>
-        <button onClick={onBack}>Back</button>
         <h2>{book.volumeInfo.title}</h2>
         <h3>{book.volumeInfo.authors.join(', ')}</h3>
         <h3>Kind: {book.kind?.replace("books#", "")}</h3>
@@ -40,14 +39,7 @@ const DetailsPage: React.FC = () => {
         <p>{book.volumeInfo.description?.replace(/<\/?[^>]+(>|$)/g, "")}</p>
       </div>
     </>
-
-  ) : (
-    <>
-      {/* <Breadcrumb breadcrumbList={[{ name: 'Home', path: '/' }, { name: 'Table', path: '/table' }, { name: `${itemId}`, path: `/table/${itemId}` }]} /> */}
-
-      <div>Loading...</div>
-    </>
-  );
+  ) : <></>
 };
 
 export default DetailsPage;
