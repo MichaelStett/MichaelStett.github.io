@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Breadcrumb from "./Breadcrumb";
 import axios from "axios";
 import { BookDetails } from "../types/BookDetails";
+import StarRatings from 'react-star-ratings';
 
 type DetailParams = {
   itemId: string;
@@ -24,19 +25,37 @@ const DetailsPage: React.FC = () => {
 
   return book ? (
     <>
-      <Breadcrumb breadcrumbList={[
-        { breadcrumb: { name: 'Home', path: '/' } },
-        { breadcrumb: { name: 'Table', path: `/table/${search}` } },
-        { breadcrumb: { name: `${book.volumeInfo.title}`, path: `` } },
-        { breadcrumb: { name: `Details`, path: `/table/${search}/${itemId}/Details` } }
-      ]} />
+      <div className='sticky w-full min-h-screen h-full bg-gradient-to-r from-[#8ECAE6] to-[#219EBC] px-4 py-4 prevent-text-selection'>
 
-      <div>
-        <h2>{book.volumeInfo.title}</h2>
-        <h3>{book.volumeInfo.authors.join(', ')}</h3>
-        <h3>Kind: {book.kind?.replace("books#", "")}</h3>
-        {/* cleanup html tags in text */}
-        <p>{book.volumeInfo.description?.replace(/<\/?[^>]+(>|$)/g, "")}</p>
+        <Breadcrumb breadcrumbList={[
+          { breadcrumb: { name: 'Home', path: '/' } },
+          { breadcrumb: { name: 'Table', path: `/table/${search}` } },
+          { breadcrumb: { name: `${book.volumeInfo.title}`, path: `` } },
+          { breadcrumb: { name: `Details`, path: `/table/${search}/${itemId}/details` } }
+        ]} />
+
+
+        <div className="mt-10 mx-auto p-6 w-full max-w-xl bg-white border border-gray-300 shadow-lg rounded-lg overflow-hidden">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2">{book.volumeInfo.title}</h2>
+          <h3 className="text-lg text-gray-600 mb-2">{book.volumeInfo.authors?.join(', ')}</h3>
+          <br />
+          Rating:
+          <StarRatings
+            rating={book.volumeInfo.averageRating}
+            numberOfStars={5}
+            starRatedColor="#FFD700"
+            starEmptyColor="white"
+            name='rating'
+            starDimension="20px"
+            starSpacing="2px"
+          />
+          <h3 className="text-gray-500 mb-4">Kind: {book.kind?.replace("books#", "")}</h3>
+          <h3 className="text-gray-500 mb-4">Pages: {book.volumeInfo.pageCount}</h3>
+          <p style={{ fontSize: '1rem' }} className="text-gray-700 leading-relaxed">
+            <span style={{ fontSize: '2rem' }}>{book.volumeInfo.description?.replace(/<\/?[^>]+(>|$)/g, "").charAt(0)}</span>
+            {book.volumeInfo.description?.replace(/<\/?[^>]+(>|$)/g, "").slice(1)}
+          </p>
+        </div>
       </div>
     </>
   ) : <></>

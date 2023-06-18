@@ -18,8 +18,9 @@ const Search: React.FC = () => {
   return (
     <div>
       <input type="text" value={searchValue} onChange={handleSearchChange}
-        className="px-4 py-2 border rounded-md mr-2 w-60" />
-      <button onClick={handleSearchClick} className="px-4 py-2 bg-blue-500 text-white rounded-md">Search</button>
+        className="px-4 py-2 border rounded-lg mr-2 w-60" 
+        placeholder="Find the books!"/>
+      <button onClick={handleSearchClick} className="px-4 py-2 bg-gradient-to-r from-[#FFB703] to-[#FB8500]  text-white rounded-lg">Search</button>
     </div>
   );
 }

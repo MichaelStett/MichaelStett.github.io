@@ -34,10 +34,6 @@ const Table: React.FC = () => {
   const navigate = useNavigate();
   const [fetchedData, setfetchedData] = useState<FlatBook[]>([]);
 
-  useEffect(() => {
-    setSearchValue(search);
-  }, [search]);
-
   const fetchData = async () => {
     try {
       const result = await axios(`https://www.googleapis.com/books/v1/volumes?q=${searchValue}&maxResults=10&startIndex=${startIndex}`);
@@ -50,6 +46,10 @@ const Table: React.FC = () => {
 
     }
   };
+
+  useEffect(() => {
+    setSearchValue(search);
+  }, [search]);
 
   useEffect(() => {
     fetchData();
@@ -92,7 +92,7 @@ const Table: React.FC = () => {
     headerGroups,
     rows,
     prepareRow
-  } = useTable({ columns, data }, useSortBy);
+  } = useTable({ columns, data });
 
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
@@ -105,18 +105,15 @@ const Table: React.FC = () => {
 
   return (
     <>
-      <div className="sticky container mx-auto px-4">
-        <div className="sticky top-0 bg-white">
-          <Breadcrumb breadcrumbList={breadcrumbs} />
-        </div>
-
-        <table {...getTableProps()} className="table-fixed w-full mt-10 text-sm sm:text-base md:text-lg bg-white">
-          <thead className="sticky top-6 z-10 bg-white">
+      <div className='sticky w-full min-h-screen h-full bg-gradient-to-r from-[#8ECAE6] to-[#219EBC] px-4 py-4 prevent-text-selection'>
+        <Breadcrumb breadcrumbList={breadcrumbs} />
+        <table {...getTableProps()} className="mt-10 table-fixed w-full text-sm sm:text-base md:text-lg bg-white overflow-wrap">
+          <thead className="sticky bg-white px-4" style={{top: '3em'}}>
             {headerGroups.map(headerGroup => (
-              <tr {...headerGroup.getHeaderGroupProps()} className="bg-blue-500 text-white rounded">
+              <tr {...headerGroup.getHeaderGroupProps()} className="bg-[#023047] text-white">
                 {headerGroup.headers.map((column: any) => (
                   <th
-                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                    {...column.getHeaderProps()}
                     className="px-4 py-2"
                   >
                     {column.render('Header')}
@@ -149,13 +146,13 @@ const Table: React.FC = () => {
                       }
                     }
                     }
-                    className={`${isExpanded ? 'bg-gray-400 text-white' : 'bg-white text-black'} cursor-pointer`}
+                    className={`${isExpanded ? 'bg-[#FB8500] text-white' : 'bg-white hover:bg-[#FB8500] hover:text-white text-black'} cursor-pointer`}
                   >
                     {row.cells.map(cell => {
                       return (
                         <td
                           {...cell.getCellProps()}
-                          className="text-center p-2 border border-gray-300 whitespace-normal overflow-clip prevent-text-selection"
+                          className="text-center p-2 border border-gray-200 whitespace-normal overflow-clip"
                         >
                           {cell.render('Cell')}
                         </td>
@@ -164,7 +161,7 @@ const Table: React.FC = () => {
                   </tr>
                   {isExpanded ? (
                     <tr>
-                      <td colSpan={columns.length} className="bg-gray-300 px-4 py-2 text-black prevent-text-selection">
+                      <td colSpan={columns.length} className="bg-gray-200 px-4 py-2 text-black">
                         Categories: {row.original.categories}
                         <br />
                         Rating:
@@ -181,17 +178,20 @@ const Table: React.FC = () => {
                         {row.original.description}
                         <br />
                         <button onClick={() => navigate(`/table/${search}/${row.original.id}/details`)}
-                          className='px-4 py-2 bg-blue-500 text-white rounded-md'> More </button>
+                          className='px-4 py-2 bg-[#FB8500] text-white rounded-md'> More </button>
                       </td>
                     </tr>
                   ) : null}
+               
                 </React.Fragment>
               );
             })}
           </tbody>
         </table>
         <div className="flex justify-center items-center">
-          <button onClick={() => fetchData()} className=' mt-4 mb-4 px-4 py-2 bg-blue-500 text-white rounded-md'>Load more</button>
+          <button onClick={() => {
+            fetchData();
+          }} className='mt-4 mb-4 px-4 py-2 bg-gradient-to-r from-[#FFB703] to-[#FB8500] text-white rounded-md'>Load more</button>
         </div>
       </div>
     </>

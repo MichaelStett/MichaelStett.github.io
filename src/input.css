@@ -2,8 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* color palette https://coolors.co/palette/8ecae6-219ebc-023047-ffb703-fb8500 */
+  --pallete-light-blue: #8ECAE6;
+  --pallete-blue: #219EBC;
+  --pallete-dark-blue: #023047;
+  --pallete-orange: #FFB703;
+  --pallete-dark-orange: #FB8500;
+}
+
 .prevent-text-selection {
-    -webkit-user-select: none; /* Safari */
-    -ms-user-select: none; /* IE 10 and IE 11 */
-    user-select: none; /* Standard syntax */
-  }
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10 and IE 11 */
+  user-select: none;
+  /* Standard syntax */
+}
+
+.from-light-blue {
+  --tw-gradient-from: var(--pallete-light-blue) var(--tw-gradient-from-position);
+  --tw-gradient-to: var(--pallete-light-blue) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.to-blue {
+  --tw-gradient-to: var(--pallete-blue) var(--tw-gradient-to-position);
+}
+
+.bg-pallete-light-blue {
+  --tw-bg-opacity: 1;
+  background-color: rgb(142 202 230 / var(--tw-bg-opacity));
+}
+.bg-pallete-blue {
+  --tw-bg-opacity: 1;
+  background-color: rgb(33 158 188 / var(--tw-bg-opacity));
+}
+.bg-pallete-dark-blue {
+  --tw-bg-opacity: 1;
+  background-color: rgb(2 48 71 / var(--tw-bg-opacity));
+}
+.bg-pallete-orange {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 183 3 / var(--tw-bg-opacity));
+}
+.bg-pallete-dark-orange {
+  --tw-bg-opacity: 1;
+  background-color: rgb(251 133 0 / var(--tw-bg-opacity));
+}
