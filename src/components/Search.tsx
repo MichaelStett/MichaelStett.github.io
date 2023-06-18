@@ -9,16 +9,26 @@ const Search: React.FC = () => {
     setSearchValue(event.target.value);
   };
 
-  const handleSearchClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSearchClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (searchValue.length > 0){
       navigate(`/table/${searchValue}`);
     }
   }
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    console.log(event)
+    if (event.key === 'Enter') {
+      if (searchValue.length > 0){
+        navigate(`/table/${searchValue}`);
+      }
+    }
+  };
+
   return (
     <div>
       <input type="text" value={searchValue} onChange={handleSearchChange}
         className="px-4 py-2 border rounded-lg mr-2 w-60" 
+        onKeyDown={handleKeyDown}
         placeholder="Find the books!"/>
       <button onClick={handleSearchClick} className="px-4 py-2 bg-gradient-to-r from-[#FFB703] to-[#FB8500]  text-white rounded-lg">Search</button>
     </div>

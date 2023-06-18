@@ -35,12 +35,13 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ breadcrumbList }) => {
   }, [isScrolled]);
 
   return (
-    <div ref={elementRef} className={`${isScrolled ? 'rounded-bl-lg rounded-br-lg' : 'rounded-lg'} sticky top-0 text-sm sm:text-base md:text-lg px-4 py-4 mx-auto w-full border border-gray-400 border-solid bg-white`}>
+    <div ref={elementRef} className={`${isScrolled ? 'rounded-bl-lg rounded-br-lg' : 'rounded-lg'} sticky top-0 z-10 text-sm sm:text-base md:text-lg px-4 py-4 mx-auto w-full border border-gray-400 border-solid bg-white`}>
       {breadcrumbList.map((item, index) => {
         const isLastItem = index === breadcrumbList.length - 1;
         return (
           <span key={index}>
-            <a onClick={() => location.pathname == item.breadcrumb.path || item.breadcrumb.path == '' ? null : navigate(item.breadcrumb.path)}>
+            <a onClick={() => location.pathname == item.breadcrumb.path || item.breadcrumb.path == '' ? null : navigate(item.breadcrumb.path)}
+                className={`${ item.breadcrumb.path != '' ? 'cursor-pointer' : ''}`}>
               {item.breadcrumb.name.length > 40 ? item.breadcrumb.name.substring(0, 37) + '...' : item.breadcrumb.name}
             </a>
             {!isLastItem && " / "}

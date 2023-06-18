@@ -108,7 +108,7 @@ const Table: React.FC = () => {
       <div className='sticky w-full min-h-screen h-full bg-gradient-to-r from-[#8ECAE6] to-[#219EBC] px-4 py-4 prevent-text-selection'>
         <Breadcrumb breadcrumbList={breadcrumbs} />
         <table {...getTableProps()} className="mt-10 table-fixed w-full text-sm sm:text-base md:text-lg bg-white overflow-wrap">
-          <thead className="sticky bg-white px-4" style={{top: '3em'}}>
+          <thead className="sticky z-10 bg-white px-4" style={{top: '3em'}}>
             {headerGroups.map(headerGroup => (
               <tr {...headerGroup.getHeaderGroupProps()} className="bg-[#023047] text-white">
                 {headerGroup.headers.map((column: any) => (
@@ -160,25 +160,29 @@ const Table: React.FC = () => {
                     })}
                   </tr>
                   {isExpanded ? (
-                    <tr>
-                      <td colSpan={columns.length} className="bg-gray-200 px-4 py-2 text-black">
-                        Categories: {row.original.categories}
-                        <br />
-                        Rating:
-                        <StarRatings
-                          rating={row.original.averageRating}
-                          numberOfStars={5}
-                          starRatedColor="#FFD700"
-                          starEmptyColor="white"
-                          name='rating'
-                          starDimension="20px"
-                          starSpacing="2px"
-                        />
-                        <br />
-                        {row.original.description}
-                        <br />
-                        <button onClick={() => navigate(`/table/${search}/${row.original.id}/details`)}
-                          className='px-4 py-2 bg-[#FB8500] text-white rounded-md'> More </button>
+                    <tr className='w-full'>
+                      <td colSpan={columns.length} className="bg-gray-100 px-4 py-2 text-black">
+                        <div className="flex z-0 justify-center items-center">
+                          <div className='w-3/5'>
+                            Rating:
+                            <StarRatings
+                              rating={row.original.averageRating}
+                              numberOfStars={5}
+                              starRatedColor="#FFD700"
+                              starEmptyColor="#808080"
+                              name='rating'
+                              starDimension="20px"
+                              starSpacing="2px"
+                            />
+                            <br />
+                            {trimText(row.original.description, 225)}
+                            <br />
+                            <div className="flex justify-center items-center">
+                              <button onClick={() => navigate(`/table/${search}/${row.original.id}/details`)}
+                                className='px-4 py-2 bg-gradient-to-r from-[#FFB703] to-[#FB8500] text-white rounded-md'> More </button>
+                            </div>
+                          </div>
+                        </div>
                       </td>
                     </tr>
                   ) : null}
