@@ -55,15 +55,15 @@ const DetailsPagePresentation: React.FC<DetailsPagePresentationProps> = ({ navig
                 <BreadcrumbContainer breadcrumbList={breadcrumbs} />
 
                 <div className="mt-10 mx-auto p-6 w-full max-w-xl bg-white border border-gray-300 shadow-lg rounded-lg overflow-hidden">
-                    <div className="flex flex-row mb-4">
+                    <div className="flex flex-col sm:flex-row mb-4">
                         <img
                             src={`https://books.google.com/books/content?id=${book.id}&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api`}
                             alt={book.volumeInfo.title}
-                            className="w-1/2 sm:w-1/2 mr-6 sm:mb-0 object-cover"
+                            className="w-3/4 sm:w-1/2 mr-6 sm:mb-0 mb-6 object-cover"
                         />
                         <div className="w-full sm:w-3/4 ml-3">
-                            <h2 className="text-2xl font-semibold text-gray-800 mb-2">{book.volumeInfo.title}</h2>
-                            <h3 className="text-lg text-gray-600 mb-2">{book.volumeInfo.authors?.join(', ')}</h3>
+                            <h2 className="text-2xl font-semibold text-gray-800 mb-2 break-word">{book.volumeInfo.title}</h2>
+                            <h3 className="text-lg text-gray-600 mb-2 break-word">{book.volumeInfo.authors?.join(', ')}</h3>
                             <br />
                             Rating:
                             <StarRatings
@@ -76,12 +76,12 @@ const DetailsPagePresentation: React.FC<DetailsPagePresentationProps> = ({ navig
                                 starSpacing="2px"
                             />
                             <h3 className="text-gray-500 mb-4">Kind: {book.kind?.replace("books#", "")}</h3>
-                            <h3 className="text-gray-500 mb-4">Pages: {book.volumeInfo.pageCount}</h3>
+                            <h3 className="text-gray-500 mb-4">Pages: {book.volumeInfo.pageCount == undefined ? 'unknown' : book.volumeInfo.pageCount}</h3>
                         </div>
                     </div>
-                    <p style={{ fontSize: '1rem' }} className="text-gray-700 leading-relaxed">
+                    <p style={{ fontSize: '1rem' }} className="text-gray-700 leading-relaxed text-justify">
                         <span style={{ fontSize: '2rem' }}>{book.volumeInfo.description?.replace(/<\/?[^>]+(>|$)/g, "").charAt(0)}</span>
-                        {book.volumeInfo.description?.replace(/<\/?[^>]+(>|$)/g, "").slice(1)}
+                            {book.volumeInfo.description?.replace(/<\/?[^>]+(>|$)/g, "").slice(1)}
                     </p>
                 </div>
 

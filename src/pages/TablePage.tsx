@@ -13,11 +13,13 @@ import { flatten } from '../utils/flatten';
 import { trimText } from '../utils/trimText';
 import { useFetchData } from '../hooks/useFetchData';
 import { useBreadcrumbs } from '../hooks/useBreadcrumbs';
+import { useWindowWidth } from '../hooks/useWindowWidth';
 
 export type TableParams = { search: string; };
 
 const TablePage: React.FC = () => {
   const { search } = useParams<TableParams>();
+  const windowWidth = useWindowWidth();
 
   const navigate = useNavigate();
 
@@ -52,32 +54,37 @@ const TablePage: React.FC = () => {
   const data = React.useMemo(() => flatData, [flatData]);
 
   const columns: Column<FlatBook>[] = React.useMemo(
-    () => [
-      {
-        Header: 'No',
-        Cell: ({ row }: { row: any }) => (
-          <span className='justify-normal'>{row.index + 1}</span>
-        ),
-        disableSortBy: false,
-      },
-      {
-        Header: 'ID',
-        accessor: 'id',
-      },
-      {
-        Header: 'Title',
-        accessor: 'title',
-      },
-      {
-        Header: 'Authors',
-        accessor: 'authors',
-      },
-      {
-        Header: 'Kind',
-        accessor: 'kind',
-      },
-    ],
-    []
+    () => {
+      const baseColumns : Column<FlatBook>[]  = [
+        {
+          Header: 'No',
+          Cell: ({ row }: { row: any }) => (
+            <span className='justify-normal'>{row.index + 1}</span>
+          )
+        },
+        {
+          Header: 'Title',
+          accessor: 'title',
+        },
+        {
+          Header: 'Authors',
+          accessor: 'authors',
+        },
+        {
+          Header: 'Kind',
+          accessor: 'kind',
+        },
+      ];
+
+      // If window width is less than 640px (Tailwind's `sm` breakpoint),
+      // exclude 'ID' column
+      if (windowWidth >= 640) {
+        baseColumns.splice(1, 0, { Header: 'ID', accessor: 'id', });
+      }
+
+      return baseColumns;
+    },
+    [windowWidth]
   );
 
   const {
@@ -135,7 +142,7 @@ const TablePage: React.FC = () => {
                 {headerGroup.headers.map((column: any) => (
                   <th
                     {...column.getHeaderProps()}
-                    className="px-4 py-2"
+                    className={`px-4 py-2 ${column.id === 'No' ? ' w-14 text-left' : ''}`}
                   >
                     {column.render('Header')}
                   </th>
@@ -171,7 +178,7 @@ const TablePage: React.FC = () => {
                       return (
                         <td
                           {...cell.getCellProps()}
-                          className="text-center p-2 border border-gray-200 whitespace-normal overflow-clip"
+                          className='text-center border px-2 py-1 border-gray-200 whitespace-normal break-all'
                         >
                           {cell.render('Cell')}
                         </td>

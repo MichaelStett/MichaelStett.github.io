@@ -19,12 +19,12 @@ const SearchPresentation: React.FC<SearchPresentationProps> = ({
       value={searchValue} 
       onChange={onSearchChange}
       onKeyDown={onKeyDown}
-      className="px-4 py-2 border rounded-lg mr-2 w-60" 
+      className="px-4 py-2 border rounded-lg mr-2 sm:w-60 w-3/5" 
       placeholder="Find the books!"
     />
     <button 
       onClick={onSearchClick} 
-      className="px-4 py-2 bg-gradient-to-r from-[#FFB703] to-[#FB8500] text-white rounded-lg">
+      className="sm:w-24 w-1/3 px-4 py-2 bg-gradient-to-r from-[#FFB703] to-[#FB8500] text-white rounded-lg">
       Search
     </button>
   </div>

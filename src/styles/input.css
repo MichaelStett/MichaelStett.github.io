@@ -50,3 +50,21 @@
   --tw-bg-opacity: 1;
   background-color: rgb(251 133 0 / var(--tw-bg-opacity));
 }
+
+nav {
+  display: flex;
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none;  /* For Internet Explorer and Edge */
+}
+
+nav::-webkit-scrollbar {
+  display: none;  /* For Chrome, Safari and Opera */
+}
+
+ol {
+  list-style: none;
+  padding: 0;
+  white-space: nowrap;
+}

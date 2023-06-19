@@ -1,5 +1,5 @@
 import React, { RefObject } from "react";
-import { Location, NavigateFunction } from "react-router-dom";
+import { Link, Location, NavigateFunction } from "react-router-dom";
 
 import { BreadcrumbProps } from "../../types/BreadcrumbTypes";
 
@@ -18,29 +18,32 @@ const BreadcrumbPresentation: React.FC<BreadcrumbPresentationProps> = ({
   location,
   isScrolled,
   elementRef,
-})  => (
-    <div 
-      ref={elementRef} 
-      className={`${isScrolled ? 'rounded-bl-lg rounded-br-lg' : 'rounded-lg'} sticky top-0 z-10 text-sm sm:text-base md:text-lg px-4 py-4 mx-auto w-full border border-gray-400 border-solid bg-white`}
-    >
-      {breadcrumbList.map((item, index) => {
-        const isLastItem = index === breadcrumbList.length - 1;
-        const breadcrumbPathNotEmpty = item.breadcrumb.path !== '';
+}) => (
+  <div
+    ref={elementRef}
+    className={`${isScrolled ? 'rounded-bl-lg rounded-br-lg' : 'rounded-lg'} sticky top-0 z-10 text-sm sm:text-base md:text-lg px-4 py-4 mx-auto w-full border border-gray-400 border-solid bg-white`}
+  >
+    <nav className="flex w-full overflow-x-auto scrollbar-hide" aria-label="Breadcrumb">
+        <ol className="list-none p-0 whitespace-nowrap">
+        {breadcrumbList.map((item, index) => {
+          const isLastItem = index === breadcrumbList.length - 1;
+          const breadcrumbPathNotEmpty = item.breadcrumb.path !== '';
 
-        console.log(item.breadcrumb.name)
-        return (
-          <span key={index}>
-            <a 
-              onClick={() => location.pathname === item.breadcrumb.path || !breadcrumbPathNotEmpty ? null : navigate(item.breadcrumb.path)}
-              className={breadcrumbPathNotEmpty ? 'cursor-pointer' : ''}
-            >
-              {trimBreadcrumbName(item.breadcrumb.name)}
-            </a>
-            {!isLastItem && <span> / </span>}
-          </span>
-        );
-      })}
-    </div>
-  );
-  
-  export default BreadcrumbPresentation;
+          return (
+            <span key={index}>
+              <a
+                onClick={() => location.pathname === item.breadcrumb.path || !breadcrumbPathNotEmpty ? null : navigate(item.breadcrumb.path)}
+                className={breadcrumbPathNotEmpty ? 'cursor-pointer' : ''}
+              >
+                {trimBreadcrumbName(item.breadcrumb.name)}
+              </a>
+              {!isLastItem && <span> / </span>}
+            </span>
+          );
+        })}
+      </ol>
+    </nav>
+  </div>
+);
+
+export default BreadcrumbPresentation;
