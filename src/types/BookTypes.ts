@@ -1,3 +1,7 @@
+export type Books = {
+    items: Book[];
+}
+
 export type Book = {
     id: string;
     volumeInfo: {
@@ -11,6 +15,7 @@ export type Book = {
 }
 
 export type BookDetails = {
+    id: string;
     volumeInfo: {
         title: string;
         authors: string[];

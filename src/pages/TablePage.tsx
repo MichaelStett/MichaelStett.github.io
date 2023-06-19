@@ -5,28 +5,35 @@ import StarRatings from 'react-star-ratings';
 import axios from 'axios';
 
 import { BreadcrumbProp } from '../types/BreadcrumbTypes';
-import { FlatBook } from '../types/BookTypes';
+import { Book, Books, FlatBook } from '../types/BookTypes';
 
-import Breadcrumb from '../components/Breadcrumb';
+import BreadcrumbContainer from '../components/Smart/BreadcrumbContainer';
 
 import { flatten } from '../utils/flatten';
 import { trimText } from '../utils/trimText';
+import { useFetchData } from '../hooks/useFetchData';
+import { useBreadcrumbs } from '../hooks/useBreadcrumbs';
 
 export type TableParams = { search: string; };
 
 const TablePage: React.FC = () => {
   const { search } = useParams<TableParams>();
+
+  const navigate = useNavigate();
+
   const [searchValue, setSearchValue] = useState<string | undefined>(search)
   const [startIndex, setStartIndex] = useState(0);
-  const navigate = useNavigate();
-  const [fetchedData, setfetchedData] = useState<FlatBook[]>([]);
+  const [flatData, setFlatData] = useState<FlatBook[]>([]);
+  const { breadcrumbs, addBreadcrumb, removeLastBreadcrumb } = useBreadcrumbs([{ breadcrumb: { name: 'Home', path: '/' } }, { breadcrumb: { name: 'Table', path: `/table/${search}` } }]);
+  const { data: books, error, loading } = useFetchData<Books>(`https://www.googleapis.com/books/v1/volumes?q=${searchValue}&maxResults=10&startIndex=${startIndex}`)
 
-  const fetchData = async () => {
+  const GetTableData = async () => {
     try {
-      const result = await axios(`https://www.googleapis.com/books/v1/volumes?q=${searchValue}&maxResults=10&startIndex=${startIndex}`);
-      const flat = flatten(result.data.items)
-      setfetchedData([...fetchedData, ...flat])
-      setStartIndex(startIndex + 10);
+      if (books) {
+        const flat = flatten(books.items)
+        setFlatData([...flatData, ...flat])
+        setStartIndex(startIndex + 10);
+      }
     } catch (err) {
       console.log(err)
     } finally {
@@ -35,14 +42,14 @@ const TablePage: React.FC = () => {
   };
 
   useEffect(() => {
+    GetTableData();
+  }, [loading]);
+
+  useEffect(() => {
     setSearchValue(search);
   }, [search]);
 
-  useEffect(() => {
-    fetchData();
-  }, [searchValue]);
-
-  const data = React.useMemo(() => fetchedData, [fetchedData]);
+  const data = React.useMemo(() => flatData, [flatData]);
 
   const columns: Column<FlatBook>[] = React.useMemo(
     () => [
@@ -83,19 +90,46 @@ const TablePage: React.FC = () => {
 
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
-  const defaultBreadcrumbs: BreadcrumbProp[] = [
-    { breadcrumb: { name: 'Home', path: '/' } },
-    { breadcrumb: { name: 'Table', path: `/table/${search}` } },
-  ]
+  if (loading) return (
+    <>
+      <div className='sticky w-full min-h-screen h-full bg-gradient-to-r from-[#8ECAE6] to-[#219EBC] px-4 py-4 prevent-text-selection'>
+        <BreadcrumbContainer breadcrumbList={breadcrumbs} />
+        <div className="h-full flex justify-center items-center">
+          <p className='text-white font-semibold font px-4 py-4 text-xl'>Loading...</p>
+        </div>
+      </div>
+    </>
+  )
 
-  const [breadcrumbs, setBreadCrumbs] = useState<BreadcrumbProp[]>(defaultBreadcrumbs);
+  if (error) return (
+    <>
+      <div className='sticky w-full min-h-screen h-full bg-gradient-to-r from-[#8ECAE6] to-[#219EBC] px-4 py-4 prevent-text-selection'>
+        <BreadcrumbContainer breadcrumbList={breadcrumbs} />
+        <div className="h-full flex justify-center items-center">
+          <p className='text-white font-semibold font px-4 py-4 text-xl'>Error: {error.message}</p>
+        </div>
+      </div>
+    </>
+  )
+
+  if (!books || !books.items || books.items.length < 1) return (
+    <>
+      <div className='sticky w-full min-h-screen h-full bg-gradient-to-r from-[#8ECAE6] to-[#219EBC] px-4 py-4 prevent-text-selection'>
+        <BreadcrumbContainer breadcrumbList={breadcrumbs} />
+        <div className="h-full flex justify-center items-center">
+          <p className='text-white font-semibold font px-4 py-4 text-xl'>Nothing found.</p>
+          <button onClick={() => { navigate('/') }} className='mt-4 mb-4 px-4 py-2 bg-gradient-to-r from-[#FFB703] to-[#FB8500] text-white rounded-md'>Go back</button>
+        </div>
+      </div>
+    </>
+  )
 
   return (
     <>
       <div className='sticky w-full min-h-screen h-full bg-gradient-to-r from-[#8ECAE6] to-[#219EBC] px-4 py-4 prevent-text-selection'>
-        <Breadcrumb breadcrumbList={breadcrumbs} />
+        <BreadcrumbContainer breadcrumbList={breadcrumbs} />
         <table {...getTableProps()} className="mt-10 table-fixed w-full text-sm sm:text-base md:text-lg bg-white overflow-wrap">
-          <thead className="sticky z-10 bg-white px-4" style={{top: '3em'}}>
+          <thead className="sticky z-10 bg-white px-4" style={{ top: '3em' }}>
             {headerGroups.map(headerGroup => (
               <tr {...headerGroup.getHeaderGroupProps()} className="bg-[#023047] text-white">
                 {headerGroup.headers.map((column: any) => (
@@ -120,15 +154,13 @@ const TablePage: React.FC = () => {
                     {...row.getRowProps()}
                     onClick={() => {
                       if (row.index === expandedRow) {
-                        breadcrumbs.pop();
-                        setBreadCrumbs(breadcrumbs);
+                        removeLastBreadcrumb();
                         setExpandedRow(null);
                       } else {
                         if (breadcrumbs.length > 2) {
                           breadcrumbs.pop();
                         }
-                        breadcrumbs.push({ breadcrumb: { name: `${data[row.index].title}`, path: '' } });
-                        setBreadCrumbs(breadcrumbs);
+                        addBreadcrumb({ breadcrumb: { name: `${data[row.index].title}`, path: '' } });
                         setExpandedRow(row.index);
                       }
                     }
@@ -173,16 +205,14 @@ const TablePage: React.FC = () => {
                       </td>
                     </tr>
                   ) : null}
-               
+
                 </React.Fragment>
               );
             })}
           </tbody>
         </table>
         <div className="flex justify-center items-center">
-          <button onClick={() => {
-            fetchData();
-          }} className='mt-4 mb-4 px-4 py-2 bg-gradient-to-r from-[#FFB703] to-[#FB8500] text-white rounded-md'>Load more</button>
+          <button onClick={() => { GetTableData() }} className='mt-4 mb-4 px-4 py-2 bg-gradient-to-r from-[#FFB703] to-[#FB8500] text-white rounded-md'>Load more</button>
         </div>
       </div>
     </>
