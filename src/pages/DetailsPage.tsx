@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import Breadcrumb from "./Breadcrumb";
-import axios from "axios";
-import { BookDetails } from "../types/BookDetails";
+import { useParams } from "react-router-dom";
 import StarRatings from 'react-star-ratings';
+import axios from "axios";
 
-type DetailParams = {
-  itemId: string;
-  search: string;
-};
+import { BookDetails } from "../types/BookTypes";
+
+import Breadcrumb from "../components/Breadcrumb";
+
+export type DetailParams = {  itemId: string;  search: string; };
 
 const DetailsPage: React.FC = () => {
   const { itemId, search } = useParams<DetailParams>();

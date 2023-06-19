@@ -1,33 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useTable, useSortBy, Column } from 'react-table';
-import Breadcrumb from "./Breadcrumb";
-import { Book, BreadcrumbProp, FlatBook } from '../types/Book';
+import { useTable, Column } from 'react-table';
+import { useNavigate, useParams } from "react-router-dom";
 import StarRatings from 'react-star-ratings';
+import axios from 'axios';
 
-type TableParams = {
-  search: string;
-};
+import { BreadcrumbProp } from '../types/BreadcrumbTypes';
+import { FlatBook } from '../types/BookTypes';
 
-const flatten = function (books: Book[]): FlatBook[] {
-  return books.map(book => ({
-    id: book.id,
-    title: trimText(book.volumeInfo.title),
-    description: book.volumeInfo.description,
-    authors: trimText(book.volumeInfo.authors?.join(', ')),
-    categories: trimText(book.volumeInfo.categories?.join(', ')),
-    averageRating: book.volumeInfo.averageRating,
-    kind: book.kind.replace("books#", ""),
-  }));
-};
+import Breadcrumb from '../components/Breadcrumb';
 
-const trimText = function (text: string, maxLenght: number = 40): string {
-  if (text === undefined) return '';
-  return text.length > maxLenght ? text.substring(0, maxLenght - 3) + '...' : text;
-}
+import { flatten } from '../utils/flatten';
+import { trimText } from '../utils/trimText';
 
-const Table: React.FC = () => {
+export type TableParams = { search: string; };
+
+const TablePage: React.FC = () => {
   const { search } = useParams<TableParams>();
   const [searchValue, setSearchValue] = useState<string | undefined>(search)
   const [startIndex, setStartIndex] = useState(0);
@@ -96,12 +83,12 @@ const Table: React.FC = () => {
 
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
-  const breadcrumbsArray: Array<BreadcrumbProp> = [
+  const defaultBreadcrumbs: BreadcrumbProp[] = [
     { breadcrumb: { name: 'Home', path: '/' } },
     { breadcrumb: { name: 'Table', path: `/table/${search}` } },
   ]
 
-  const [breadcrumbs, setBreadCrumbs] = useState<Array<BreadcrumbProp>>(breadcrumbsArray);
+  const [breadcrumbs, setBreadCrumbs] = useState<BreadcrumbProp[]>(defaultBreadcrumbs);
 
   return (
     <>
@@ -202,4 +189,4 @@ const Table: React.FC = () => {
   );
 };
 
-export default Table;
+export default TablePage;

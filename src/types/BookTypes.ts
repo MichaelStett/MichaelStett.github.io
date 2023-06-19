@@ -10,6 +10,18 @@ export type Book = {
     kind: string;
 }
 
+export type BookDetails = {
+    volumeInfo: {
+        title: string;
+        authors: string[];
+        description: string;
+        categories: string[];
+        averageRating: number;
+        pageCount: number;
+    };
+    kind: string;
+};
+
 export type FlatBook = {
     id: string;
     title: string;
@@ -18,12 +30,4 @@ export type FlatBook = {
     categories: string;
     averageRating: number;
     kind: string;
-}
-
-export type BreadcrumbProps = {
-    breadcrumbList: BreadcrumbProp[];
-}
-
-export type BreadcrumbProp = {
-    breadcrumb: { name: string, path: string};
 }

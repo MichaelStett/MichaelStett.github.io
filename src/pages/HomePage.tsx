@@ -1,8 +1,9 @@
 import React from 'react';
-import Breadcrumb from './Breadcrumb';
-import Search from './Search';
 
-const Home: React.FC = () => {
+import Breadcrumb from '../components/Breadcrumb';
+import Search from '../components/Search';
+
+const HomePage: React.FC = () => {
   return (
     <>
       <div className="w-full min-h-screen max-h-screen h-full bg-gradient-to-r from-light-blue to-blue px-4 py-4 overflow-hidden">
@@ -17,4 +18,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default HomePage;

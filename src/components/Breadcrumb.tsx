@@ -1,6 +1,7 @@
 import React, {useEffect, useState, useRef } from "react";
-import { BreadcrumbProps } from "../types/Book";
 import { useLocation, useNavigate } from "react-router-dom";
+
+import { BreadcrumbProps } from "../types/BreadcrumbTypes";
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ breadcrumbList }) => {
   const navigate = useNavigate();
